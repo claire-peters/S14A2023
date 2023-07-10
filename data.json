@@ -1,0 +1,7 @@
+{
+  "headers": ["Name", "Count"],
+  "rows": [
+    ["John", 1],
+    ["Jane", 2]
+  ]
+}

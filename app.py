@@ -1,28 +1,72 @@
-"""
-A simple Flask app consisting of:
-- a landing page 
-- a page "datetime" showing the current datetime in the server's timezone and another datetime in the UTC timezone
-- a page "pacifictime" showing the current datetime in pacific time.
-"""
+"""A simple website with pages for Home, About, List and Contact endpoints."""
 
-from flask import Flask
-from datetime import datetime as dt
-import pytz
+from flask import Flask, render_template
+import json
 
 app = Flask(__name__)
 
+# Links for the navigation bar
+links = [
+    {'name': 'Home', 'url': '/'},
+    {'name': 'About', 'url': '/about'},
+    {'name': 'Login', 'url': '/login'},
+    {'name': 'List', 'url': '/list'},
+    {'name': 'Contact', 'url': '/contact'}
+]
+
+
 @app.route('/')
 def index():
-    return 'Hello, World! Welcome to CSCI S-14a.<br><a href=/datetime>datetime</a><br><a href="/pacifictime">pacific</a>'
+    return render_template('home.html', title='Home', navigation=links)
 
-@app.route('/datetime')
-def datetime():
-    now = dt.now()
-    utc = dt.utcnow()
-    return f'Current server timezone date time {now}. Current UTC datetime is {utc}'
+@app.route('/about')
+def about():
+    """A paragraph about the author/site."""
+    return render_template('about.html', title='About', navigation=links)
 
-@app.route('/pacifictime')
-def pacifictime():
-    return (f'Current Pacific timezone date time {dt.now(tz=pytz.timezone("US/Pacific"))}')
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.route('/list')
+def list():
+    """
+    Specs:
+        displays a <table> with multiple rows. Data should come
+        from a list of dictionaries from the Flask application. Use Jinja
+        inheritance to construct a base template and the subsequent templates
+        to extend the basetemplate.
+
+    """
+    # read in json for table Data
+    with open('data.json', 'r') as f:
+        table_data = json.load(f)
+    return render_template('list.html', title='List', navigation=links, table_data=table_data)
+
+@app.route('/registration')
+def registration():
+    """
+    Specs:
+        an HTML form with fields for first name, last name, e-mail,
+        password and a button. The form should be submitted to the same
+        URL using the POST method. The form should be validated using
+        Flask-WTF. If the form is valid, the user should be redirected
+        to the /l
+    """
+    return render_template('registration.html', title='Registration', navigation=links)
+
+@app.route('/login')
+def login():
+    """
+    Specs:
+        an HTML form with fields for e-mail, password and a button.
+        The form should be submitted to the same URL using the POST method.
+        The form should be validated using Flask-WTF. If the form is valid,
+        the user should be redirected to the /list endpoint.
+    """
+    return render_template('login.html', title='Login', navigation=links)
+
+@app.route('/contact')
+def contact():
+    """
+    Specs:
+        an HTML form with fields for sender's e-mail and a message
+        in a <textarea> textbox, with a button.
+    """
+    return render_template('contact.html', title='Contact', navigation=links)
