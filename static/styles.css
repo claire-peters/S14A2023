@@ -1,0 +1,10 @@
+#site_name {
+  font-size: 60px;
+  color: chartreuse;
+  font-family: "Source Code Pro", monospace;
+}
+
+#navbar-user {
+  font-family: "Source Code Pro", monospace;
+  color: black;
+}
