@@ -1,9 +1,17 @@
 """A simple website with pages for Home, About, List and Contact endpoints."""
 
-from flask import Flask, render_template
 import json
+from os import environ
+from flask import Flask, render_template
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 app = Flask(__name__)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = environ.get('postgres_connection_string')
+# initialize the app with the extension
+db.init_app(app)
 
 # Links for the navigation bar
 links = [
@@ -13,7 +21,6 @@ links = [
     {'name': 'List', 'url': '/list'},
     {'name': 'Contact', 'url': '/contact'}
 ]
-
 
 @app.route('/')
 def index():
