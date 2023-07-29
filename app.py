@@ -1,17 +1,8 @@
 """A simple website with pages for Home, About, List and Contact endpoints."""
 
 import json
-from os import environ
-from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
-
-app = Flask(__name__)
-
-app.config["SQLALCHEMY_DATABASE_URI"] = environ.get('postgres_connection_string')
-# initialize the app with the extension
-db.init_app(app)
+from flask import render_template, request, url_for, flash, redirect
+from models import db, app, User
 
 # Links for the navigation bar
 links = [
@@ -19,8 +10,10 @@ links = [
     {'name': 'About', 'url': '/about'},
     {'name': 'Login', 'url': '/login'},
     {'name': 'List', 'url': '/list'},
-    {'name': 'Contact', 'url': '/contact'}
+    {'name': 'Contact', 'url': '/contact'},
+    {'name': 'Users', 'url': '/users'}
 ]
+
 
 @app.route('/')
 def index():
@@ -77,3 +70,58 @@ def contact():
         in a <textarea> textbox, with a button.
     """
     return render_template('contact.html', title='Contact', navigation=links)
+
+
+@app.route('/adduser')
+def adduser():
+    """
+    a form with at least two form fields are used that creates a new entry
+    in the table. Include data validation and error handling (e.g. for duplicate
+    keys or invalid data types)
+    """
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        phonenumber = request.form['phonenumber']
+        status = request.form['status']
+        is_admin = request.form['is_admin']
+
+        if not username:
+            flash('Username is required!')
+        elif not email:
+            flash('email is required!')
+        else:
+            new_user = User(
+                username=username,
+                email=email,
+                phonenumber=phonenumber,
+                status=status,
+                is_admin=is_admin,
+            )
+            db.session.add(new_user)
+            db.session.commit()
+
+    return render_template('adduser.html', title='Add User', navigation=links)
+
+@app.route('/updateuser')
+def updateuser():
+    """
+    a form that displays a single record and allows change of at least two
+    available fields.
+    """
+    return render_template('updateuser.html', title='Update User', navigation=links)
+
+@app.route('/deleteuser')
+def deleteuser():
+    """
+    deletes a single row from the database, based on the primary key provided.
+    Can use this endpoint from the `/updateuser` endpoint since deletion is
+    another form of update.
+    """
+    return render_template('deleteuser.html', title='Delete User', navigation=links)
+
+@app.route('/users')
+def users():
+    """list all the users from the table, in an HTML `<table>` structure."""
+    user_objs = User.query.all()
+    return render_template('users.html', title='Users', users=user_objs, navigation=links)
