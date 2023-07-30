@@ -76,10 +76,6 @@ def adduser():
         username = request.form['username']
         email = request.form['email']
         errors = []
-        try:
-            user_id = User.query.order_by(User.id.desc()).first()['id'] + 1
-        except IndexError:
-            user_id = 1
 
         if not username:
             errors.append('Username is required!')
@@ -93,7 +89,6 @@ def adduser():
 
         else:
             new_user = User(
-                id=user_id,
                 username=username,
                 email=email,
                 phonenumber=request.form['phonenumber'],
@@ -166,11 +161,6 @@ def add_order(uid):
         item_name = request.form['item_name']
         item_count = request.form['item_count']
         errors = []
-        try:
-            order_id = Order.query.order_by(Order.id.desc()).first()['id'] + 1
-        except IndexError:
-            order_id = 1
-
         if not item_name:
             errors.append('item_name is required!')
         if not item_count:
@@ -181,7 +171,6 @@ def add_order(uid):
 
         else:
             new_order = Order(
-                id=order_id,
                 item_name=request.form['item_name'],
                 item_count=request.form['item_count'],
                 total=request.form['item_count'] * .99,
