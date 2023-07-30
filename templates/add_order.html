@@ -14,9 +14,9 @@
 
         <label for="item_count">number of items</label>
         <br>
-        <input type="text" name="item_count" value="{{ request.form['item_count'] }}"/>
+        <input type="number" name="item_count" value="{{ request.form['item_count'] }}"/>
         <br>
 
-        <button type="submit">Submit</button>
+        <button type="submit">Add New Order</button>
     </form>
 {% endblock %}

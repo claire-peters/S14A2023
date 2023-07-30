@@ -31,10 +31,6 @@
 
         <label for="is_admin">is admin</label>
         <br>
-        <select name="is_admin" value="{{ request.form['status'] }}">
-          <option value="0">Inactive</option>
-          <option value="1" selected>Active</option>
-        </select>
         <input type="checkbox" name="is_admin" value="{{ request.form['is_admin'] }}"/>
         <br>
 

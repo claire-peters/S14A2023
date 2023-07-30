@@ -76,10 +76,6 @@ def adduser():
         username = request.form['username']
         email = request.form['email']
         errors = []
-        try:
-            user_id = User.query.last()['id'] + 1
-        except IndexError:
-            user_id = 1
 
         if not username:
             errors.append('Username is required!')
@@ -93,7 +89,6 @@ def adduser():
 
         else:
             new_user = User(
-                id=user_id,
                 username=username,
                 email=email,
                 phonenumber=request.form['phonenumber'],
@@ -147,17 +142,17 @@ def users():
 
 
 @app.route('/orders/<int:uid>')
-def orders(uid):
+def orders(uid=None):
     """list all orders in an HTML `<table>` structure."""
-    user = User.query.filter(id=uid).first()
-    order_objs = Order.query.filter(user_id=uid)
+    user = User.query.filter_by(id=uid).first()
+    order_objs = Order.query.filter_by(user_id=uid)
     return render_template('orders.html', title='Orders', orders=order_objs, user=user, navigation=links)
 
 
-@app.route('/add_order/<int:uid>')
+@app.route('/add_order/<int:uid>', methods=['GET','POST'])
 def add_order(uid):
     """Add an order for a specified user"""
-    user = User.query.filter(id=uid).first()
+    user = User.query.filter_by(id=uid).first()
 
     if request.method == 'GET':
         return render_template('add_order.html', title='Add Order',user=user, navigation=links)
@@ -166,11 +161,6 @@ def add_order(uid):
         item_name = request.form['item_name']
         item_count = request.form['item_count']
         errors = []
-        try:
-            order_id = Order.query.last()['id'] + 1
-        except IndexError:
-            order_id = 1
-
         if not item_name:
             errors.append('item_name is required!')
         if not item_count:
@@ -181,7 +171,6 @@ def add_order(uid):
 
         else:
             new_order = Order(
-                id=order_id,
                 item_name=request.form['item_name'],
                 item_count=request.form['item_count'],
                 total=request.form['item_count'] * .99,
