@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}
+<title>Add a User</title>
+{% endblock %}
+
+{% block content %}
+    <h1>Add a New Order</h1>
+    <form method="post">
+
+        <label for="item_name">item name</label>
+        <br>
+        <input type="text" name="item_name" value="{{ request.form['item_name'] }}"/>
+        <br>
+
+        <label for="item_count">number of items</label>
+        <br>
+        <input type="text" name="item_count" value="{{ request.form['item_count'] }}"/>
+        <br>
+
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}

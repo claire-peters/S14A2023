@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %} User List {% endblock %}
+
+<!-- This block overwrites the `content` block on the `base` or otherwise known as 'parent' template -->
+{% block content %}
+<h1>Users</h1>
+<table>
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>username</th>
+      <th>email</th>
+      <th>phonenumber</th>
+      <th>status</th>
+      <th>is_admin</th>
+      <th>actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+    <tr>
+      <td>{{ user.uid }}</td>
+      <td>{{ user.username }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.phonenumber }}</td>
+      <td>{{ user.status }}</td>
+      <td>{{ user.is_admin }}</td>
+      <td>
+        <a href="/updateuser/{{ user.id }}">Update User</a>
+        <a href="/orders/{{ user.id }}">View Orders</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="/adduser">Add a new user</a>
+{% endblock %}

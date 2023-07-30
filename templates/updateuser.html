@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}
+<title>Add a User</title>
+{% endblock %}
+
+{% block content %}
+    <h1>Update an existing User</h1>
+    <form method="post">
+        <label for="username">Username</label>
+        <br>
+        <input type="text" name="username" value="{{ user.username }}"/>
+        <br>
+
+        <label for="email">email</label>
+        <br>
+        <input type="text" name="email" value="{{ user.email }}"/>
+        <br>
+
+        <label for="phonenumber">phone number</label>
+        <br>
+        <input type="text" name="phonenumber" value="{{ user.phonenumber }}"/>
+        <br>
+
+        <button type="submit">Update</button>
+        <button type="submit" formaction="/deleteuser/{{ user.id }}">
+          Delete User</button>
+
+    </form>
+{% endblock %}
