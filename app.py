@@ -83,7 +83,7 @@ def adduser():
             db.session.commit()
         return redirect('/')
 
-@app.route('/updateuser/<int:id>', methods=['GET', 'POST'])
+@app.route('/updateuser/<int:uid>', methods=['GET', 'POST'])
 def updateuser(uid):
     """
     a form that displays a single record and allows change of at least two
@@ -99,7 +99,7 @@ def updateuser(uid):
         'updateuser.html', title='Update User', user=existing_user, navigation=links
     )
 
-@app.route('/deleteuser/<int:id>', methods=['GET','POST'])
+@app.route('/deleteuser/<int:uid>', methods=['GET','POST'])
 def deleteuser(uid):
     """
     deletes a single row from the database, based on the primary key provided.
