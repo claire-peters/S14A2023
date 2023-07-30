@@ -1,7 +1,6 @@
 """A simple website with pages for Home, About, List and Contact endpoints."""
 
-import json
-from flask import render_template, request, url_for, flash, redirect
+from flask import render_template, request, flash, redirect
 from models import db, app, User
 
 # Links for the navigation bar
@@ -9,9 +8,8 @@ links = [
     {'name': 'Home', 'url': '/'},
     {'name': 'About', 'url': '/about'},
     {'name': 'Login', 'url': '/login'},
-    {'name': 'List', 'url': '/list'},
+    {'name': 'Users', 'url': '/users'},
     {'name': 'Contact', 'url': '/contact'},
-    {'name': 'Users', 'url': '/users'}
 ]
 
 
@@ -23,21 +21,6 @@ def index():
 def about():
     """A paragraph about the author/site."""
     return render_template('about.html', title='About', navigation=links)
-
-@app.route('/list')
-def list():
-    """
-    Specs:
-        displays a <table> with multiple rows. Data should come
-        from a list of dictionaries from the Flask application. Use Jinja
-        inheritance to construct a base template and the subsequent templates
-        to extend the basetemplate.
-
-    """
-    # read in json for table Data
-    with open('data.json', 'r') as f:
-        table_data = json.load(f)
-    return render_template('list.html', title='List', navigation=links, table_data=table_data)
 
 @app.route('/registration')
 def registration():
@@ -79,13 +62,11 @@ def adduser():
     in the table. Include data validation and error handling (e.g. for duplicate
     keys or invalid data types)
     """
+    if request.method == 'GET':
+        return render_template('adduser.html')
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
-        phonenumber = request.form['phonenumber']
-        status = request.form['status']
-        is_admin = request.form['is_admin']
-
         if not username:
             flash('Username is required!')
         elif not email:
@@ -94,31 +75,45 @@ def adduser():
             new_user = User(
                 username=username,
                 email=email,
-                phonenumber=phonenumber,
-                status=status,
-                is_admin=is_admin,
+                phonenumber=request.form['phonenumber'],
+                status=request.form['status'],
+                is_admin=request.form['is_admin'],
             )
             db.session.add(new_user)
             db.session.commit()
+        return redirect('/')
 
-    return render_template('adduser.html', title='Add User', navigation=links)
-
-@app.route('/updateuser')
-def updateuser():
+@app.route('/updateuser/<int:id>', methods=['GET', 'POST'])
+def updateuser(uid):
     """
     a form that displays a single record and allows change of at least two
     available fields.
     """
-    return render_template('updateuser.html', title='Update User', navigation=links)
+    existing_user = User.query.filter_by(id=uid).first()
+    if request.method == 'POST':
+        existing_user.username=request.form['username']
+        existing_user.email=request.form['email']
+        existing_user.phonenumber=request.form['phonenumber']
+        existing_user.status=request.form['status']
+        existing_user.is_admin=request.form['is_admin']
+        db.session.commit()
+    return render_template(
+        'updateuser.html', title='Update User', user=existing_user, navigation=links
+    )
 
-@app.route('/deleteuser')
-def deleteuser():
+@app.route('/deleteuser/<int:id>', methods=['GET','POST'])
+def deleteuser(uid):
     """
     deletes a single row from the database, based on the primary key provided.
     Can use this endpoint from the `/updateuser` endpoint since deletion is
     another form of update.
     """
-    return render_template('deleteuser.html', title='Delete User', navigation=links)
+    existing_user = User.query.filter_by(id=uid).first()
+    if request.method == 'POST':
+        db.session.delete(existing_user)
+        db.session.commit()
+        return redirect('/')
+
 
 @app.route('/users')
 def users():
