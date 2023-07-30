@@ -145,8 +145,8 @@ def users():
     return render_template('users.html', title='Users', users=user_objs, navigation=links)
 
 
-@app.route('/orders/<int:uid>')
-def orders(uid=None):
+@app.route('/orders')
+def orders():
     """list all orders in an HTML `<table>` structure."""
     user = User.query.filter_by(id=uid).first()
     order_objs = Order.query.filter_by(user_id=uid)
