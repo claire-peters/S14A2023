@@ -1,5 +1,4 @@
 """A simple website with pages for Home, About, List and Contact endpoints."""
-import review
 from os import environ
 
 from flask import render_template, request, flash, redirect
@@ -78,7 +77,7 @@ def adduser():
         email = request.form['email']
         errors = []
         try:
-            user_id = User.query.last()['id'] + 1
+            user_id = User.query.order_by(User.id.desc()).first()['id'] + 1
         except IndexError:
             user_id = 1
 
@@ -148,17 +147,17 @@ def users():
 
 
 @app.route('/orders/<int:uid>')
-def orders(uid):
+def orders(uid=None):
     """list all orders in an HTML `<table>` structure."""
-    user = User.query.filter(id=uid).first()
-    order_objs = Order.query.filter(user_id=uid)
+    user = User.query.filter_by(id=uid).first()
+    order_objs = Order.query.filter_by(user_id=uid)
     return render_template('orders.html', title='Orders', orders=order_objs, user=user, navigation=links)
 
 
-@app.route('/add_order/<int:uid>')
+@app.route('/add_order/<int:uid>', methods=['GET','POST'])
 def add_order(uid):
     """Add an order for a specified user"""
-    user = User.query.filter(id=uid).first()
+    user = User.query.filter_by(id=uid).first()
 
     if request.method == 'GET':
         return render_template('add_order.html', title='Add Order',user=user, navigation=links)
@@ -168,7 +167,7 @@ def add_order(uid):
         item_count = request.form['item_count']
         errors = []
         try:
-            order_id = Order.query.last()['id'] + 1
+            order_id = Order.query.order_by(Order.id.desc()).first()['id'] + 1
         except IndexError:
             order_id = 1
 
