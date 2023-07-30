@@ -55,7 +55,7 @@ def contact():
     return render_template('contact.html', title='Contact', navigation=links)
 
 
-@app.route('/adduser')
+@app.route('/adduser', methods=['GET', 'POST'])
 def adduser():
     """
     a form with at least two form fields are used that creates a new entry
@@ -94,8 +94,6 @@ def updateuser(uid):
         existing_user.username=request.form['username']
         existing_user.email=request.form['email']
         existing_user.phonenumber=request.form['phonenumber']
-        existing_user.status=request.form['status']
-        existing_user.is_admin=request.form['is_admin']
         db.session.commit()
     return render_template(
         'updateuser.html', title='Update User', user=existing_user, navigation=links

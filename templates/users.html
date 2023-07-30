@@ -16,9 +16,10 @@
       <th>actions</th>
     </tr>
   </thead>
+  <tbody>
     {% for user in users %}
     <tr>
-      <td>{{ user.id }}</td>
+      <td>{{ user.uid }}</td>
       <td>{{ user.username }}</td>
       <td>{{ user.email }}</td>
       <td>{{ user.phonenumber }}</td>
@@ -26,6 +27,8 @@
       <td><a href="/updateuser/{{ user.id }}">Update User</a></td>
     </tr>
     {% endfor %}
+  </tbody>
 </table>
 
+<a href="/adduser">Add a new user</a>
 {% endblock %}

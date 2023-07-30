@@ -19,6 +19,17 @@ class User(db.Model):
     phonenumber = db.Column(db.String)
     status = db.Column(db.Integer)
     is_admin = db.Column(db.Boolean)
+    orders = db.relationship('Order', backref='user')
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    item_name = db.Column(db.String)
+    item_count = db.Column(db.Integer)
+    total = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
