@@ -1,4 +1,4 @@
-from models import db, app, User
+from models import db, app, User, Order
 
 with app.app_context():
     db.create_all()

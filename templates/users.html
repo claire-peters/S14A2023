@@ -26,7 +26,10 @@
       <td>{{ user.phonenumber }}</td>
       <td>{{ user.status }}</td>
       <td>{{ user.is_admin }}</td>
-      <td><a href="/updateuser/{{ user.id }}">Update User</a></td>
+      <td>
+        <a href="/updateuser/{{ user.id }}">Update User</a>
+        <a href="/orders/{{ user.id }}">View Orders</a>
+      </td>
     </tr>
     {% endfor %}
   </tbody>

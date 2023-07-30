@@ -1,4 +1,5 @@
 """A simple website with pages for Home, About, List and Contact endpoints."""
+import review
 from os import environ
 
 from flask import render_template, request, flash, redirect
@@ -22,10 +23,12 @@ links = [
 def index():
     return render_template('home.html', title='Home', navigation=links)
 
+
 @app.route('/about')
 def about():
     """A paragraph about the author/site."""
     return render_template('about.html', title='About', navigation=links)
+
 
 @app.route('/registration')
 def registration():
@@ -83,6 +86,8 @@ def adduser():
             errors.append('Username is required!')
         if not email:
             errors.append('email is required!')
+        if "@" not in email:
+            errors.append('Please enter a valid email.')
         if errors:
             for error in errors:
                 flash(error, 'error')
@@ -142,8 +147,47 @@ def users():
     return render_template('users.html', title='Users', users=user_objs, navigation=links)
 
 
-@app.route('/orders')
-def orders():
+@app.route('/orders/<int:uid>')
+def orders(uid):
     """list all orders in an HTML `<table>` structure."""
-    order_objs = Order.query.all()
-    return render_template('orders.html', title='Orders', users=order_objs, navigation=links)
+    user = User.query.filter(id=uid).first()
+    order_objs = Order.query.filter(user_id=uid)
+    return render_template('orders.html', title='Orders', orders=order_objs, user=user, navigation=links)
+
+
+@app.route('/add_order/<int:uid>')
+def add_order(uid):
+    """Add an order for a specified user"""
+    user = User.query.filter(id=uid).first()
+
+    if request.method == 'GET':
+        return render_template('add_order.html', title='Add Order',user=user, navigation=links)
+
+    if request.method == 'POST':
+        item_name = request.form['item_name']
+        item_count = request.form['item_count']
+        errors = []
+        try:
+            order_id = Order.query.last()['id'] + 1
+        except IndexError:
+            order_id = 1
+
+        if not item_name:
+            errors.append('item_name is required!')
+        if not item_count:
+            errors.append('item_count is required!')
+        if errors:
+            for error in errors:
+                flash(error, 'error')
+
+        else:
+            new_order = Order(
+                id=order_id,
+                item_name=request.form['item_name'],
+                item_count=request.form['item_count'],
+                total=request.form['item_count'] * .99,
+                user_id=uid,
+            )
+            db.session.add(new_order)
+            db.session.commit()
+            return redirect('/')
