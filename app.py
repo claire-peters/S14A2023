@@ -1,5 +1,4 @@
 """A simple website with pages for Home, About, List and Contact endpoints."""
-import review
 from os import environ
 
 from flask import render_template, request, flash, redirect
