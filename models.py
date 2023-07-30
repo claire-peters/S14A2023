@@ -2,6 +2,10 @@ from os import environ
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv, find_dotenv
+
+
+load_dotenv(find_dotenv())
 
 db = SQLAlchemy()
 

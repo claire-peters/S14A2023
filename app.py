@@ -2,7 +2,11 @@
 from os import environ
 
 from flask import render_template, request, flash, redirect
+from dotenv import load_dotenv, find_dotenv
+
 from models import db, app, User, Order
+
+load_dotenv(find_dotenv())
 
 app.secret_key = environ.get('secret_key')
 app.config['SESSION_TYPE'] = 'filesystem'
