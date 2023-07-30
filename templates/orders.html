@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %} Orders List {% endblock %}
+
+<!-- This block overwrites the `content` block on the `base` or otherwise known as 'parent' template -->
+{% block content %}
+<h1>Orders</h1>
+<table>
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>item_name</th>
+      <th>item_count</th>
+      <th>total</th>
+      <th>user_id</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in orders %}
+    <tr>
+      <td>{{ order.item_name }}</td>
+      <td>{{ order.item_count }}</td>
+      <td>{{ order.total }}</td>
+      <td>{{ order.user_id }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="/addorder">Add a new order</a>
+{% endblock %}

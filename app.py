@@ -1,7 +1,11 @@
 """A simple website with pages for Home, About, List and Contact endpoints."""
+from os import environ
 
 from flask import render_template, request, flash, redirect
-from models import db, app, User
+from models import db, app, User, Order
+
+app.secret_key = environ.get('secret_key')
+app.config['SESSION_TYPE'] = 'filesystem'
 
 # Links for the navigation bar
 links = [
@@ -9,6 +13,7 @@ links = [
     {'name': 'About', 'url': '/about'},
     {'name': 'Login', 'url': '/login'},
     {'name': 'Users', 'url': '/users'},
+    {'name': 'Orders', 'url': '/orders'},
     {'name': 'Contact', 'url': '/contact'},
 ]
 
@@ -63,25 +68,37 @@ def adduser():
     keys or invalid data types)
     """
     if request.method == 'GET':
-        return render_template('adduser.html')
+        return render_template('adduser.html', title='Add User', navigation=links)
+
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
+        errors = []
+        try:
+            user_id = User.query.last()['id'] + 1
+        except IndexError:
+            user_id = 1
+
         if not username:
-            flash('Username is required!')
-        elif not email:
-            flash('email is required!')
+            errors.append('Username is required!')
+        if not email:
+            errors.append('email is required!')
+        if errors:
+            for error in errors:
+                flash(error, 'error')
+
         else:
             new_user = User(
+                id=user_id,
                 username=username,
                 email=email,
                 phonenumber=request.form['phonenumber'],
                 status=request.form['status'],
-                is_admin=request.form['is_admin'],
+                is_admin=request.form.get('is_admin'),
             )
             db.session.add(new_user)
             db.session.commit()
-        return redirect('/')
+            return redirect('/')
 
 @app.route('/updateuser/<int:uid>', methods=['GET', 'POST'])
 def updateuser(uid):
@@ -90,14 +107,16 @@ def updateuser(uid):
     available fields.
     """
     existing_user = User.query.filter_by(id=uid).first()
+    if request.method == 'GET':
+        return render_template(
+            'updateuser.html', title='Update User', user=existing_user, navigation=links
+        )
     if request.method == 'POST':
         existing_user.username=request.form['username']
         existing_user.email=request.form['email']
         existing_user.phonenumber=request.form['phonenumber']
         db.session.commit()
-    return render_template(
-        'updateuser.html', title='Update User', user=existing_user, navigation=links
-    )
+        return redirect('/')
 
 @app.route('/deleteuser/<int:uid>', methods=['GET','POST'])
 def deleteuser(uid):
@@ -111,10 +130,20 @@ def deleteuser(uid):
         db.session.delete(existing_user)
         db.session.commit()
         return redirect('/')
+    return render_template(
+        'updateuser.html', title='Update User', user=existing_user, navigation=links
+    )
 
 
 @app.route('/users')
 def users():
-    """list all the users from the table, in an HTML `<table>` structure."""
+    """list all users in an HTML `<table>` structure."""
     user_objs = User.query.all()
     return render_template('users.html', title='Users', users=user_objs, navigation=links)
+
+
+@app.route('/orders')
+def orders():
+    """list all orders in an HTML `<table>` structure."""
+    order_objs = Order.query.all()
+    return render_template('orders.html', title='Orders', users=order_objs, navigation=links)
